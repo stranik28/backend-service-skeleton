@@ -40,8 +40,8 @@ async with db.transaction():
 ``` python
 if txn_type == 'WITHDRAW':
   balance = await get_user_balance(user_id)
-if balance < amount:
-  raise ValueError('Not enough money to withdraw')
+  if balance < amount:
+    raise ValueError('Not enough money to withdraw')
 ```
     
 <li> Провекра на уровне базы данных </li>
