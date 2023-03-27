@@ -8,3 +8,21 @@ services:
       - "5432:5432"
     env_file:
       - .env
+    networks:
+      - backend
+  back-web:
+    build: .
+    ports:
+      - "8000:8000"
+    networks:
+      - backend
+    depends_on:
+      db:
+        condition: service_started
+    volumes:
+      - .:/app
+
+networks:
+  backend:
+    name: backend
+

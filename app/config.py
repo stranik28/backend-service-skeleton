@@ -1,5 +1,5 @@
 class Config:
-    DEBUG: bool = True
-    HOST: str = "localhost"
+    DEBUG: bool = False
+    HOST: str = "0.0.0.0"
     PORT: int = 8000
-    DATABASE_URI: str = "postgresql+asyncpg://user:password@localhost:5432/test"
+    DATABASE_URI: str = "postgresql+asyncpg://user:password@db:5432/test"

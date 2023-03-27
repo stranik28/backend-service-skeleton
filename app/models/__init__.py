@@ -1,7 +1,7 @@
 from gino import Gino
 from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey
-from datetime import datetime
 from sqlalchemy.orm import relationship
+from sqlalchemy.orm import validates
 
 db = Gino()
 
@@ -13,6 +13,12 @@ class User(db.Model):
     balance = Column(Float, default=0)
 
     transactions = relationship("Transaction", back_populates="user")
+
+    @validates('balance')
+    def validate_balance(self, value):
+        if value < 0:
+            raise ValueError("Balance can't be negative.")
+        return value
     
 
 

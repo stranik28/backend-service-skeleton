@@ -1,14 +1,19 @@
 from aiohttp import web
-from app.api import crud
+import app.api.crud as crud
+
 
 async def create_user(request: web.Request) -> web.Response:
+    '''
+        Создание пользователя на вход принимает 
+        name:str
+    '''
     data = await request.json()
     name = data.get("name")
 
     if not name:
-        return web.Response(status=400, text="Name is required")
+        raise web.HTTPBadRequest(text="Name is required")
 
-    user = await crud.crud_create_user(name)
+    user = await crud.create_user(name)
 
     return web.json_response(
         {
@@ -20,29 +25,31 @@ async def create_user(request: web.Request) -> web.Response:
     )
 
 async def get_user_balance(request: web.Request) -> web.Response:
+    '''
+        Получение баланса пользователя, входные данные
+        id:int
+        date:timestamp[Optional]
+    '''
     id = int(request.match_info["id"])
     date = request.query.get("date")
 
     try:
-        balance = await crud.crud_get_user_balance(id, date)
+        balance = await crud.get_user_balance(id, date)
     except ValueError as e:
-        return web.Response(status=404, text=str(e))
+        raise web.HTTPNotFound(text=str(e))
 
     return web.json_response({"balance": balance}, status=200)
-
-async def get_user_balance(request: web.Request) -> web.Response:
-    id = int(request.match_info["id"])
-    date = request.query.get("date")
-
-    try:
-        balance = await crud.crud_get_user_balance(id, date)
-    except ValueError as e:
-        return web.Response(status=404, text=str(e))
-
-    return web.json_response({"balance": balance}, status=200)
-
 
 async def add_transaction(request: web.Request) -> web.Response:
+    '''
+        Добавление транзакции, на вход подаются данные:
+        uid:UID
+        type: Enum('DEPOSIT', 'WITHDRAW')
+        amount:float
+        user_id:int
+        timestamp:timestamp
+
+    '''
     data = await request.json()
     uid = data.get("uid")
     txn_type = data.get("type")
@@ -51,11 +58,11 @@ async def add_transaction(request: web.Request) -> web.Response:
     timestamp = data.get("timestamp")
 
     try:
-        transaction = await crud.crud_add_transaction(
+        transaction = await crud.add_transaction(
             uid, txn_type, amount, user_id, timestamp
         )
     except ValueError as e:
-        return web.Response(status=402, text=str(e))
+        raise web.HTTPPaymentRequired(text=str(e))
 
     return web.json_response(
         {
@@ -66,12 +73,16 @@ async def add_transaction(request: web.Request) -> web.Response:
     )
 
 async def get_transaction(request: web.Request) -> web.Response:
+    '''
+        Получение тразакци, на вход подается
+        uid:UID
+    '''
     uid = request.match_info["uid"]
 
     try:
-        transaction = await crud.crud_get_transaction(uid)
+        transaction = await crud.get_transaction(uid)
     except ValueError as e:
-        return web.Response(status=400, text=str(e))
+        raise web.HTTPBadRequest(text=str(e))
 
     return web.json_response(
         {
