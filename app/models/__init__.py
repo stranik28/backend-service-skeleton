@@ -30,5 +30,5 @@ class Transaction(db.Model):
     type = Column(String, nullable=False)
     date = Column(DateTime)
     user_id = Column(Integer, ForeignKey("users.id"))
-    uid = Column(String, nullable=False, index=True)
+    uid = Column(String, nullable=False, index=True, unique=True)
     user = relationship("User", back_populates="transactions")

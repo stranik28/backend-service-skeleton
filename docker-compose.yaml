@@ -12,6 +12,7 @@ services:
       - backend
   back-web:
     build: .
+    restart: always
     ports:
       - "8000:8000"
     networks:
