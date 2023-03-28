@@ -1,5 +1,6 @@
 from app.models import *
 from datetime import datetime
+from asyncpg.exceptions import UniqueViolationError
 
 
 async def date_to_timestamp(date: str) -> int:
@@ -41,9 +42,15 @@ async def add_transaction(
         
     timestamp = await date_to_timestamp(timestamp)
 
+
     async with db.transaction():
 
-        result = await Transaction.create(uid=uid, type=txn_type, amount=amount,    
+        try:
+
+            result = await Transaction.create(uid=uid, type=txn_type, amount=amount,    
+                                            user_id=user_id, date=timestamp)
+        except UniqueViolationError as e:
+            return Transaction(uid=uid, type=txn_type, amount=amount,    
                                             user_id=user_id, date=timestamp)
         
         amount = -amount if txn_type == 'WITHDRAW' else amount

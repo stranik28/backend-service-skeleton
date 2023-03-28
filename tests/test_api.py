@@ -49,7 +49,7 @@ def test_api():
         'timestamp': datetime(2023, 1, 5).isoformat(),  # technical field to make tests possible
     }
     txn_resp = requests.post('http://localhost:8000/v1/transaction', json=txn)
-    # txn_resp = requests.post('http://localhost:8000/v1/transaction', json=txn)
+    txn_resp = requests.post('http://localhost:8000/v1/transaction', json=txn)
     assert txn_resp.status_code == 200
     assert_balance(user, 50.00)
 
